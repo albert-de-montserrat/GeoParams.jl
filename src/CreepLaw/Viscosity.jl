@@ -15,11 +15,11 @@ end
 """
     compute viscosity given strain rate 2nd invariant
 
-    τ = 2ηε -> η = 2ε/τ
+    τ = 2ηε -> η = τ/2/ε
 """
 @inline function computeViscosity_TauII(τII, v, args)
     εII = computeCreepLaw_EpsII(τII, v, args)
-    η = 2 * εII / τII
+    η = 0.5 * τII / εII
     return η
 end
 
