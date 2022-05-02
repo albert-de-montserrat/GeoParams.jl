@@ -121,6 +121,10 @@ function show(io::IO, g::PowerlawViscous)
 end
 #-------------------------------------------------------------------------
 
+for myType in (:DiffusionCreep, :DislocationCreep)
+    computeCreepLaw_EpsII(TauII, a::$(myType), args) = computeCreepLaw_EpsII(TauII, a; args...) 
+    computeCreepLaw_TauII(EpsII, a::$(myType), args) = computeCreepLaw_TauII(EpsII, a; args...) 
+end
 
 # Help info for the calculation routines
 """
