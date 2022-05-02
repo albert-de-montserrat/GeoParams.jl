@@ -22,8 +22,9 @@ abstract type AbstractCreepLaw{T} <: AbstractMaterialParam end
 export  computeCreepLaw_EpsII, computeCreepLaw_TauII,       # calculation routines
         CreepLawVariables,                                     # holds additional parameters required for calculations
         LinearViscous, 
-        PowerlawViscous
-        param_info
+        PowerlawViscous,
+        param_info,
+        computeViscosity_TauII, computeViscosity_EpsII
 
 
 # NOTE: we will likely have to remove this, in favor of multiple dispatch options
@@ -49,6 +50,7 @@ CreepLawVariables(args...) = CreepLawVariables(convert.(GeoUnit,args)...)
 
 include("DislocationCreep.jl")
 include("DiffusionCreep.jl")
+include("Viscosity.jl")
 
 # Linear viscous rheology ------------------------------------------------
 """
