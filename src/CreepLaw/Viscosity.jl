@@ -40,7 +40,7 @@ end
     end
 end
 
-@inline function computeViscosity_TauII!(τII::T, v::Tuple, args) where {T}
+@inline function computeViscosity_TauII!(τII::AbstractArray{T,nDim}, v::Tuple, args) where {T, nDim}
     Threads.@threads for I in eachindex(τII)
         computeViscosity(
             computeViscosity_TauII,
@@ -52,7 +52,7 @@ end
     end
 end
 
-@inline function computeViscosity_EpsII!(τII::T, v::Tuple, args) where {T}
+@inline function computeViscosity_EpsII!(τII::AbstractArray{T,nDim}, v::Tuple, args) where {T, nDim}
     Threads.@threads for I in eachindex(τII)
         computeViscosity(
             computeViscosity_EpsII,
@@ -64,9 +64,6 @@ end
     end
 end
 
-@inline function computeViscosity_EpsII!(εII::T, v::Tuple, args) where {T}
-    return computeViscosity(computeViscosity_EpsII, εII, v, args, Val(length(v)))
-end
 
 # OPTION 1
 strainCircuit(TauII, v, args) = strainCircuit(TauII, v, args, Val(length(v)))

@@ -122,8 +122,10 @@ end
 #-------------------------------------------------------------------------
 
 for myType in (:DiffusionCreep, :DislocationCreep)
-    computeCreepLaw_EpsII(TauII, a::$(myType), args) = computeCreepLaw_EpsII(TauII, a; args...) 
-    computeCreepLaw_TauII(EpsII, a::$(myType), args) = computeCreepLaw_TauII(EpsII, a; args...) 
+    @eval begin
+        computeCreepLaw_EpsII(TauII, a::$(myType), args) = computeCreepLaw_EpsII(TauII, a; args...) 
+        computeCreepLaw_TauII(EpsII, a::$(myType), args) = computeCreepLaw_TauII(EpsII, a; args...) 
+    end
 end
 
 # Help info for the calculation routines
