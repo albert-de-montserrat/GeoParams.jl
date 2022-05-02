@@ -1,4 +1,5 @@
-export computeViscosity_TauII, computeViscosity_EpsII
+export computeViscosity_TauII,
+    computeViscosity_EpsII, computeViscosity_TauII!, computeViscosity_EpsII!
 
 """
     compute viscosity given strain rate 2nd invariant
@@ -7,10 +8,9 @@ export computeViscosity_TauII, computeViscosity_EpsII
 """
 function computeViscosity_EpsII(εII, v, args)
     τII = computeCreepLaw_TauII(εII, v, args) # gives 
-    η = 0.5*τII/εII
+    η = 0.5 * τII / εII
     return η
 end
-
 
 """
     compute viscosity given strain rate 2nd invariant
@@ -19,40 +19,78 @@ end
 """
 @inline function computeViscosity_TauII(τII, v, args)
     εII = computeCreepLaw_EpsII(τII, v, args)
-    η = 2*εII/τII
+    η = 2 * εII / τII
     return η
 end
 
-@inline computeViscosity_TauII(τII::T, v::Tuple, args) where T = computeViscosity(computeViscosity_TauII, τII, v, args, Val(length(v))) 
-@inline computeViscosity_EpsII(εII::T, v::Tuple, args) where T = computeViscosity(computeViscosity_EpsII, εII, v, args, Val(length(v))) 
+@inline function computeViscosity_TauII(τII::T, v::Tuple, args) where {T}
+    return computeViscosity(computeViscosity_TauII, τII, v, args, Val(length(v)))
+end
+@inline function computeViscosity_EpsII(εII::T, v::Tuple, args) where {T}
+    return computeViscosity(computeViscosity_EpsII, εII, v, args, Val(length(v)))
+end
 
-@inline @generated function computeViscosity(fn::F, CII::T, v::Tuple, args::NamedTuple, ::Val{N}) where {F,T, N}
+@inline @generated function computeViscosity(
+    fn::F, CII::T, v::Tuple, args::NamedTuple, ::Val{N}
+) where {F,T,N}
     quote
         η = 0.0
-        Base.Cartesian.@nexprs $N i -> η += 1/fn(CII, v[i], args)
-        return 1/η
+        Base.Cartesian.@nexprs $N i -> η += 1 / fn(CII, v[i], args)
+        return 1 / η
     end
+end
+
+@inline function computeViscosity_TauII!(τII::T, v::Tuple, args) where {T}
+    Threads.@Threads for I in eachindex(τII)
+        computeViscosity(
+            computeViscosity_TauII,
+            τII,
+            v,
+            (; zip(keys(args), getindex.(values(args), I))...),
+            Val(length(v)),
+        )
+    end
+end
+
+@inline function computeViscosity_EpsII!(τII::T, v::Tuple, args) where {T}
+    Threads.@Threads for I in eachindex(τII)
+        computeViscosity(
+            computeViscosity_EpsII,
+            τII,
+            v,
+            (; zip(keys(args), getindex.(values(args), I))...),
+            Val(length(v)),
+        )
+    end
+end
+
+@inline function computeViscosity_EpsII!(εII::T, v::Tuple, args) where {T}
+    return computeViscosity(computeViscosity_EpsII, εII, v, args, Val(length(v)))
 end
 
 # OPTION 1
 strainCircuit(TauII, v, args) = strainCircuit(TauII, v, args, Val(length(v)))
 
-@inline @generated function strainCircuit(TauII, v, args, ::Val{N}; n=1) where N
-	quote
-		c = 0.0
-		Base.Cartesian.@nexprs $N i -> c += v[i] isa Tuple ? 1/strainCircuit(TauII, v[i], args, Val(length(v[i])); n=-1) : computeCreepLaw_EpsII(TauII, v[i], args)^n
-		return c
-	end
+@inline @generated function strainCircuit(TauII, v, args, ::Val{N}; n=1) where {N}
+    quote
+        c = 0.0
+        Base.Cartesian.@nexprs $N i ->
+            c += if v[i] isa Tuple
+                1 / strainCircuit(TauII, v[i], args, Val(length(v[i])); n=-1)
+            else
+                computeCreepLaw_EpsII(TauII, v[i], args)^n
+            end
+        return c
+    end
 end
 
-function viscosityCircuit_TauII(τII::T, v, args) where T
-    εII = strainCircuit(τII, v, args) 
-    η = 2*εII/τII
+function viscosityCircuit_TauII(τII::T, v, args) where {T}
+    εII = strainCircuit(τII, v, args)
+    return η = 2 * εII / τII
 end
 
 # v = (DiffusionCreep(), DislocationCreep())
 # v = (DiffusionCreep(), (DiffusionCreep(), DislocationCreep()))
-
 
 # EpsII = 1e-10
 # TauII = 20e6
@@ -63,7 +101,6 @@ end
 # @benchmark strainCircuit($TauII, $v, $args)
 
 # strainCircuit(TauII, v, args)
-
 
 # computeCreepLaw_TauII(EpsII, DiffusionCreep(), args)
 # @btime computeCreepLaw_TauII($EpsII, $(DiffusionCreep()), $args)

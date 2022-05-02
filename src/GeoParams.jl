@@ -69,7 +69,8 @@ export computeCreepLaw_EpsII, computeCreepLaw_TauII, CreepLawVariables,
         LinearViscous, PowerlawViscous,
         DislocationCreep, SetDislocationCreep,
         DiffusionCreep,   SetDiffusionCreep,
-        computeViscosity_EpsII, computeViscosity_TauII
+        computeViscosity_EpsII, computeViscosity_TauII,
+        computeViscosity_EpsII!, computeViscosity_TauII!
 
 # Gravitational Acceleration
 using .MaterialParameters.GravitationalAcceleration
