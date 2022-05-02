@@ -58,7 +58,7 @@ end
 # EpsII .= A.*(TauII.*FT).^n.*f.^r.*d.^p.*exp.(-(E.+P.*V)./(R.*T))./FE; Once we have a 
 # All inputs must be non-dimensionalized (or converted to consistent units) GeoUnits
 function computeCreepLaw_TauII(EpsII, a::DiffusionCreep; P, T, f, d, kwargs...)
-    @unpack_val n,r,A,E,V,R = a
+    @unpack_val n,r,p,A,E,V,R = a
 
     FT, FE = CorrectionFactor(a);    
 
