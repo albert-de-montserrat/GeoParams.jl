@@ -44,7 +44,7 @@ end
     Threads.@Threads for I in eachindex(τII)
         computeViscosity(
             computeViscosity_TauII,
-            τII,
+            τII[I],
             v,
             (; zip(keys(args), getindex.(values(args), I))...),
             Val(length(v)),
@@ -56,7 +56,7 @@ end
     Threads.@Threads for I in eachindex(τII)
         computeViscosity(
             computeViscosity_EpsII,
-            τII,
+            τII[I],
             v,
             (; zip(keys(args), getindex.(values(args), I))...),
             Val(length(v)),
