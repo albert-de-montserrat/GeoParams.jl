@@ -42,7 +42,7 @@ end
 
 @inline function computeViscosity_TauII!(η::AbstractArray{T,nDim}, τII::AbstractArray{T,nDim}, v::Tuple, args) where {T, nDim}
     Threads.@threads for I in eachindex(τII)
-        η[I] computeViscosity(
+        η[I] = computeViscosity(
             computeViscosity_TauII,
             τII[I],
             v,
@@ -54,7 +54,7 @@ end
 
 @inline function computeViscosity_EpsII!(η::AbstractArray{T,nDim}, τII::AbstractArray{T,nDim}, v::Tuple, args) where {T, nDim}
     Threads.@threads for I in eachindex(τII)
-        η[I] computeViscosity(
+        η[I] = computeViscosity(
             computeViscosity_EpsII,
             τII[I],
             v,
