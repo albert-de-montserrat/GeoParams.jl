@@ -23,9 +23,8 @@ export  computeCreepLaw_EpsII, computeCreepLaw_TauII,       # calculation routin
         CreepLawVariables,                                     # holds additional parameters required for calculations
         LinearViscous, 
         PowerlawViscous,
-        param_info,
-        computeViscosity_TauII, computeViscosity_EpsII
-
+        param_info
+    
 
 # NOTE: we will likely have to remove this, in favor of multiple dispatch options
 """

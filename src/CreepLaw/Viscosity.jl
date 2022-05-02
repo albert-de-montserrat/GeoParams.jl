@@ -1,3 +1,5 @@
+export computeViscosity_TauII, computeViscosity_EpsII
+
 """
     compute viscosity given strain rate 2nd invariant
 
