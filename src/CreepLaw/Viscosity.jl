@@ -40,26 +40,32 @@ end
     end
 end
 
-@inline function computeViscosity_TauII!(η::AbstractArray{T,nDim}, τII::AbstractArray{T,nDim}, v::Tuple, args) where {T, nDim}
+@inline function computeViscosity_TauII!(η::AbstractArray{T,nDim}, τII::AbstractArray{T,nDim}, v::Tuple, args; cutoff=(1e16, 1e25)) where {T, nDim}
     Threads.@threads for I in eachindex(τII)
-        η[I] = computeViscosity(
-            computeViscosity_TauII,
-            τII[I],
-            v,
-            (; zip(keys(args), getindex.(values(args), I))...),
-            Val(length(v)),
+        η[I] = max(
+            cutoff[1], min(cutoff[2], computeViscosity(
+                    computeViscosity_TauII,
+                    τII[I],
+                    v,
+                    (; zip(keys(args), getindex.(values(args), I))...),
+                    Val(length(v)),
+                )
+            )
         )
     end
 end
 
-@inline function computeViscosity_EpsII!(η::AbstractArray{T,nDim}, τII::AbstractArray{T,nDim}, v::Tuple, args) where {T, nDim}
+@inline function computeViscosity_EpsII!(η::AbstractArray{T,nDim}, τII::AbstractArray{T,nDim}, v::Tuple, args; cutoff=(1e16, 1e25)) where {T, nDim}
     Threads.@threads for I in eachindex(τII)
-        η[I] = computeViscosity(
-            computeViscosity_EpsII,
-            τII[I],
-            v,
-            (; zip(keys(args), getindex.(values(args), I))...),
-            Val(length(v)),
+        η[I] =  max(
+            cutoff[1], min(cutoff[2], computeViscosity(
+                computeViscosity_EpsII,
+                    τII[I],
+                    v,
+                    (; zip(keys(args), getindex.(values(args), I))...),
+                    Val(length(v)),
+                )
+            )
         )
     end
 end
