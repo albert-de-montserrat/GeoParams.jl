@@ -19,7 +19,7 @@ end
 """
 @inline function computeViscosity_TauII(τII, v, args)
     εII = computeCreepLaw_EpsII(τII, v, args)
-    η = 2 * εII / τII
+    η = 0.5 * τII / εII
     return η
 end
 
